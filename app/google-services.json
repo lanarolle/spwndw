@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "175553483992",
+    "project_id": "spendw-7a319",
+    "storage_bucket": "spendw-7a319.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:175553483992:android:2782361cd4a27aa98af3ad",
+        "android_client_info": {
+          "package_name": "com.example.spwndw"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgMXawpGRo4r93d8uZ0gi0kzKLfOddZ3A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
