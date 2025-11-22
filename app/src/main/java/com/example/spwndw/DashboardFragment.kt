@@ -15,17 +15,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class DashboardFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels()
     private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
+    private lateinit var db: FirebaseDatabase
 
     private lateinit var tvTotalBalance: TextView
+    private lateinit var tvWelcome: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var expenseAdapter: ExpenseAdapter
     private var expenses = mutableListOf<Expense>()
@@ -37,13 +41,23 @@ class DashboardFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
 
         auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
+        db = FirebaseDatabase.getInstance("https://spendw-7a319-default-rtdb.firebaseio.com/")
 
         tvTotalBalance = view.findViewById(R.id.tv_total_balance)
+        tvWelcome = view.findViewById(R.id.tv_welcome)
         recyclerView = view.findViewById(R.id.recycler_view_transactions)
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
         val bottomNav = view.findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
         val insightsButton = view.findViewById<View>(R.id.btn_get_insights)
+        val toolbar = view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+
+        // Set User Name
+        val user = auth.currentUser
+        val name = user?.displayName ?: user?.email?.substringBefore('@') ?: "User"
+        // Capitalize first letter if it came from email
+        val formattedName = name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        
+        tvWelcome.text = getString(R.string.welcome_user_format, formattedName)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
         expenseAdapter = ExpenseAdapter(expenses)
@@ -51,6 +65,18 @@ class DashboardFragment : Fragment() {
 
         fab.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardFragment_to_addExpenseFragment)
+        }
+        
+        // Handle Logout
+        toolbar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_logout -> {
+                    auth.signOut()
+                    findNavController().navigate(R.id.action_global_loginFragment)
+                    true
+                }
+                else -> false
+            }
         }
 
         bottomNav.setOnItemSelectedListener {
@@ -97,27 +123,33 @@ class DashboardFragment : Fragment() {
     private fun fetchExpenses() {
         val userId = auth.currentUser?.uid ?: return
 
-        db.collection("users").document(userId).collection("expenses")
-            .orderBy("date", Query.Direction.DESCENDING)
-            .limit(5)
-            .addSnapshotListener { snapshots, e ->
-                if (e != null) {
-                    Toast.makeText(context, "Error fetching data", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
-
-                if (snapshots != null) {
+        db.getReference("users").child(userId).child("expenses")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
                     var total = 0.0
-                    val newExpenses = snapshots.toObjects(Expense::class.java)
-                    for (expense in newExpenses) {
-                        total += expense.amount
+                    val newExpenses = mutableListOf<Expense>()
+                    
+                    for (childSnapshot in snapshot.children) {
+                        val expense = childSnapshot.getValue(Expense::class.java)
+                        if (expense != null) {
+                            newExpenses.add(expense)
+                            total += expense.amount
+                        }
                     }
+
+                    // Sort by date descending
+                    newExpenses.sortByDescending { it.date }
+
                     tvTotalBalance.text = String.format("$%.2f", total)
 
                     expenses.clear()
                     expenses.addAll(newExpenses)
                     expenseAdapter.notifyDataSetChanged()
                 }
-            }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "Error fetching data: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 }

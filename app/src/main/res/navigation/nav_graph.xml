@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_dashboardFragment"
-            app:destination="@id/dashboardFragment"
+            app:destination="@id/nav_dashboard"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
         <action
@@ -27,7 +27,7 @@
         tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_registerFragment_to_dashboardFragment"
-            app:destination="@id/dashboardFragment"
+            app:destination="@id/nav_dashboard"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
         <action
@@ -38,7 +38,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/dashboardFragment"
+        android:id="@+id/nav_dashboard"
         android:name="com.example.spwndw.DashboardFragment"
         android:label="fragment_dashboard"
         tools:layout="@layout/fragment_dashboard">

@@ -16,7 +16,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,7 +25,7 @@ class AddExpenseFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels()
     private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
+    private lateinit var db: FirebaseDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +34,8 @@ class AddExpenseFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_add_expense, container, false)
 
         auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
+        // Initialize Realtime Database with the provided URL
+        db = FirebaseDatabase.getInstance("https://spendw-7a319-default-rtdb.firebaseio.com/")
 
         val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
         val etExpenseName = view.findViewById<TextInputEditText>(R.id.et_expense_name)
@@ -82,28 +83,34 @@ class AddExpenseFragment : Fragment() {
 
         btnSaveExpense.setOnClickListener {
             val expenseName = etExpenseName.text.toString().trim()
-            val amount = etAmount.text.toString().trim()
+            val amountStr = etAmount.text.toString().trim()
             val category = actCategory.text.toString().trim()
-            val date = etDate.text.toString().trim()
+            val dateStr = etDate.text.toString().trim()
             val notes = etNotes.text.toString().trim()
 
-            if (expenseName.isEmpty() || amount.isEmpty() || category.isEmpty() || date.isEmpty()) {
+            if (expenseName.isEmpty() || amountStr.isEmpty() || category.isEmpty() || dateStr.isEmpty()) {
                 Toast.makeText(context, "Please fill all required fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            val userId = auth.currentUser?.uid ?: return@setOnClickListener
+            
+            // Create a reference for the new expense
+            val expenseRef = db.getReference("users").child(userId).child("expenses").push()
+            val expenseId = expenseRef.key ?: return@setOnClickListener
+
+            val dateMillis = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dateStr)?.time ?: System.currentTimeMillis()
+
             val expense = Expense(
+                id = expenseId,
                 name = expenseName,
-                amount = amount.toDouble(),
+                amount = amountStr.toDouble(),
                 category = category,
-                notes = notes,
-                date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
+                date = dateMillis,
+                notes = notes
             )
 
-            val userId = auth.currentUser?.uid ?: return@setOnClickListener
-
-            db.collection("users").document(userId).collection("expenses")
-                .add(expense)
+            expenseRef.setValue(expense)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Expense added successfully", Toast.LENGTH_SHORT).show()
                     findNavController().navigateUp()

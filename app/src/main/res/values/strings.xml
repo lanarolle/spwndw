@@ -1,3 +1,47 @@
 <resources>
-    <string name="app_name">spwndw</string>
+    <string name="app_name">SpendWise</string>
+    
+    <!-- Login -->
+    <string name="title_spendwise">SpendWise</string>
+    <string name="subtitle_welcome">Welcome Back!</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_login">Login</string>
+    <string name="action_register">Don\'t have an account? Register</string>
+    
+    <!-- Register -->
+    <string name="title_create_account">Create Account</string>
+    <string name="subtitle_start_journey">Start your journey with SpendWise.</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="btn_create_account">Create Account</string>
+    <string name="action_login">Already have an account? Login</string>
+    
+    <!-- Dashboard -->
+    <string name="title_dashboard">Dashboard</string>
+    <string name="welcome_user_format">Welcome back,\n%s</string>
+    <string name="label_total_balance">Total Balance</string>
+    <string name="btn_add_expense">Add Expense</string>
+    <string name="btn_view_all">View All</string>
+    <string name="label_get_insights">✨ Get Financial Insights</string>
+    <string name="title_recent_transactions">Recent Transactions</string>
+    <string name="appbar_scrolling_view_behavior">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="logout">Logout</string>
+    
+    <!-- Add Expense -->
+    <string name="title_add_expense">Add Expense</string>
+    <string name="hint_expense_name">Expense Name</string>
+    <string name="btn_smart_category">✨ Smart Category</string>
+    <string name="hint_amount">Amount</string>
+    <string name="hint_category">Category</string>
+    <string name="hint_date">Date</string>
+    <string name="hint_notes">Notes (Optional)</string>
+    <string name="btn_save_expense">Save Expense</string>
+
+    <!-- Content Descriptions -->
+    <string name="desc_app_logo">App Logo</string>
+    <string name="desc_category_icon">Category Icon</string>
+    <string name="desc_add_icon">Add</string>
+    <string name="desc_list_icon">List</string>
+    <string name="desc_arrow_forward">Go</string>
+
 </resources>
