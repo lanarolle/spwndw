@@ -49,25 +49,46 @@ class DashboardFragment : Fragment() {
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
         val bottomNav = view.findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
         val insightsButton = view.findViewById<View>(R.id.btn_get_insights)
+        val viewAllButton = view.findViewById<View>(R.id.btn_view_expenses)
         val toolbar = view.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
 
         // Set User Name
         val user = auth.currentUser
         val name = user?.displayName ?: user?.email?.substringBefore('@') ?: "User"
-        // Capitalize first letter if it came from email
         val formattedName = name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-        
         tvWelcome.text = getString(R.string.welcome_user_format, formattedName)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
-        expenseAdapter = ExpenseAdapter(expenses)
+        
+        expenseAdapter = ExpenseAdapter(expenses) { expense ->
+            val bundle = Bundle().apply {
+                putString("expenseId", expense.id)
+                putString("name", expense.name)
+                putDouble("amount", expense.amount)
+                putString("category", expense.category)
+                putLong("date", expense.date)
+                putString("notes", expense.notes)
+            }
+            findNavController().navigate(R.id.action_dashboardFragment_to_editExpenseFragment, bundle)
+        }
+
         recyclerView.adapter = expenseAdapter
 
         fab.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardFragment_to_addExpenseFragment)
         }
         
-        // Handle Logout
+        viewAllButton.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardFragment_to_expensesFragment)
+        }
+        
+        // Handle Logout (moved to profile, remove from dashboard if desired, or keep both)
+        // User said "not to added in back button and i want to profile page and then app close then logout automaticall session"
+        // This implies moving logout to Profile page.
+        // But keeping it in Dashboard toolbar is harmless unless user explicitly said remove it.
+        // User said "not to added in back button", maybe meaning "don't put logout in back button logic"?
+        // Or maybe "don't put back button in dashboard"?
+        // I'll keep toolbar logout for now as it's standard.
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.action_logout -> {
@@ -81,20 +102,14 @@ class DashboardFragment : Fragment() {
 
         bottomNav.setOnItemSelectedListener {
             when(it.itemId) {
-                R.id.nav_dashboard -> {
-                    // Already on dashboard
-                    true
-                }
+                R.id.nav_dashboard -> true
                 R.id.nav_expenses -> {
-                    // Navigate to expenses
+                    findNavController().navigate(R.id.action_dashboardFragment_to_expensesFragment)
                     true
                 }
-                R.id.nav_reports -> {
-                    // Navigate to reports
-                    true
-                }
+                R.id.nav_reports -> true
                 R.id.nav_profile -> {
-                    // Navigate to profile
+                    findNavController().navigate(R.id.action_dashboardFragment_to_profileFragment)
                     true
                 }
                 else -> false
@@ -109,7 +124,6 @@ class DashboardFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.financialInsights.collect { insights ->
                 if (insights != null) {
-                    // Display the insights in a dialog or a toast
                     Toast.makeText(context, insights, Toast.LENGTH_LONG).show()
                 }
             }
@@ -124,6 +138,7 @@ class DashboardFragment : Fragment() {
         val userId = auth.currentUser?.uid ?: return
 
         db.getReference("users").child(userId).child("expenses")
+            .limitToLast(5)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     var total = 0.0
@@ -137,7 +152,6 @@ class DashboardFragment : Fragment() {
                         }
                     }
 
-                    // Sort by date descending
                     newExpenses.sortByDescending { it.date }
 
                     tvTotalBalance.text = String.format("$%.2f", total)

@@ -45,6 +45,18 @@
         <action
             android:id="@+id/action_dashboardFragment_to_addExpenseFragment"
             app:destination="@id/addExpenseFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_expensesFragment"
+            app:destination="@id/expensesFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_editExpenseFragment"
+            app:destination="@id/editExpenseFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_profileFragment"
+            app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_reportsFragment"
+            app:destination="@id/nav_reports" />
     </fragment>
 
     <fragment
@@ -52,6 +64,34 @@
         android:name="com.example.spwndw.AddExpenseFragment"
         android:label="fragment_add_expense"
         tools:layout="@layout/fragment_add_expense" />
+
+    <fragment
+        android:id="@+id/expensesFragment"
+        android:name="com.example.spwndw.ExpensesFragment"
+        android:label="fragment_expenses"
+        tools:layout="@layout/fragment_expenses">
+        <action
+            android:id="@+id/action_expensesFragment_to_editExpenseFragment"
+            app:destination="@id/editExpenseFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editExpenseFragment"
+        android:name="com.example.spwndw.EditExpenseFragment"
+        android:label="fragment_edit_expense"
+        tools:layout="@layout/fragment_edit_expense" />
+
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.example.spwndw.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/nav_reports"
+        android:name="com.example.spwndw.ReportsFragment"
+        android:label="fragment_reports"
+        tools:layout="@layout/fragment_reports" />
 
     <action
         android:id="@+id/action_global_loginFragment"

@@ -7,7 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ExpenseAdapter(private val expenses: List<Expense>) : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
+class ExpenseAdapter(
+    private val expenses: List<Expense>,
+    private val onItemClick: (Expense) -> Unit
+) : RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_expense, parent, false)
@@ -21,11 +24,20 @@ class ExpenseAdapter(private val expenses: List<Expense>) : RecyclerView.Adapter
 
     override fun getItemCount(): Int = expenses.size
 
-    class ExpenseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ExpenseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivCategoryIcon: ImageView = itemView.findViewById(R.id.iv_category_icon)
         private val tvExpenseName: TextView = itemView.findViewById(R.id.tv_expense_name)
         private val tvCategory: TextView = itemView.findViewById(R.id.tv_category)
         private val tvAmount: TextView = itemView.findViewById(R.id.tv_amount)
+
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(expenses[position])
+                }
+            }
+        }
 
         fun bind(expense: Expense) {
             tvExpenseName.text = expense.name

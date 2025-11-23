@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.auth.FirebaseAuth
 
 class RegisterFragment : Fragment() {
@@ -25,11 +26,17 @@ class RegisterFragment : Fragment() {
 
         auth = FirebaseAuth.getInstance()
 
+        val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar)
         val etEmail = view.findViewById<EditText>(R.id.et_email)
         val etPassword = view.findViewById<EditText>(R.id.et_password)
         val etConfirmPassword = view.findViewById<EditText>(R.id.et_confirm_password)
         val btnRegister = view.findViewById<Button>(R.id.btn_register)
         val tvGoToLogin = view.findViewById<TextView>(R.id.tv_go_to_login)
+
+        // Handle Back Button
+        toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
 
         btnRegister.setOnClickListener {
             val email = etEmail.text.toString().trim()
