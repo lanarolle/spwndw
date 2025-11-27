@@ -82,13 +82,7 @@ class DashboardFragment : Fragment() {
             findNavController().navigate(R.id.action_dashboardFragment_to_expensesFragment)
         }
         
-        // Handle Logout (moved to profile, remove from dashboard if desired, or keep both)
-        // User said "not to added in back button and i want to profile page and then app close then logout automaticall session"
-        // This implies moving logout to Profile page.
-        // But keeping it in Dashboard toolbar is harmless unless user explicitly said remove it.
-        // User said "not to added in back button", maybe meaning "don't put logout in back button logic"?
-        // Or maybe "don't put back button in dashboard"?
-        // I'll keep toolbar logout for now as it's standard.
+        // Handle Logout
         toolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.action_logout -> {
@@ -107,7 +101,10 @@ class DashboardFragment : Fragment() {
                     findNavController().navigate(R.id.action_dashboardFragment_to_expensesFragment)
                     true
                 }
-                R.id.nav_reports -> true
+                R.id.nav_reports -> {
+                    findNavController().navigate(R.id.action_dashboardFragment_to_reportsFragment)
+                    true
+                }
                 R.id.nav_profile -> {
                     findNavController().navigate(R.id.action_dashboardFragment_to_profileFragment)
                     true
