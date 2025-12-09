@@ -114,7 +114,7 @@ class DashboardFragment : Fragment() {
         }
         
         insightsButton.setOnClickListener {
-            val transactions = expenses.joinToString("\n") { "${it.name}: $${it.amount}" }
+            val transactions = expenses.joinToString("\n") { "${it.name}: LKR ${it.amount}" }
             viewModel.getFinancialInsights(transactions)
         }
 
@@ -151,7 +151,7 @@ class DashboardFragment : Fragment() {
 
                     newExpenses.sortByDescending { it.date }
 
-                    tvTotalBalance.text = String.format("$%.2f", total)
+                    tvTotalBalance.text = String.format("LKR %.2f", total)
 
                     expenses.clear()
                     expenses.addAll(newExpenses)

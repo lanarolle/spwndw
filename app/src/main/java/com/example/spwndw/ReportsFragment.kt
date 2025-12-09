@@ -13,6 +13,7 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.auth.FirebaseAuth
@@ -90,15 +91,14 @@ class ReportsFragment : Fragment() {
         }
 
         val dataSet = PieDataSet(entries, "")
-        // Custom "Beautiful" Colors
         val colors = ArrayList<Int>()
-        colors.add(Color.parseColor("#2563EB")) // Primary Blue
-        colors.add(Color.parseColor("#9333EA")) // Purple
-        colors.add(Color.parseColor("#10B981")) // Emerald Green
-        colors.add(Color.parseColor("#F59E0B")) // Amber
-        colors.add(Color.parseColor("#EF4444")) // Red
-        colors.add(Color.parseColor("#3B82F6")) // Lighter Blue
-        colors.add(Color.parseColor("#8B5CF6")) // Violet
+        colors.add(Color.parseColor("#2563EB"))
+        colors.add(Color.parseColor("#9333EA"))
+        colors.add(Color.parseColor("#10B981"))
+        colors.add(Color.parseColor("#F59E0B"))
+        colors.add(Color.parseColor("#EF4444"))
+        colors.add(Color.parseColor("#3B82F6"))
+        colors.add(Color.parseColor("#8B5CF6"))
         dataSet.colors = colors
         
         dataSet.valueTextSize = 14f
@@ -107,33 +107,28 @@ class ReportsFragment : Fragment() {
         dataSet.selectionShift = 5f
 
         val data = PieData(dataSet)
-        data.setValueFormatter(object : com.github.mikephil.charting.formatter.ValueFormatter() {
+        data.setValueFormatter(object : ValueFormatter() {
             override fun getFormattedValue(value: Float): String {
-                return String.format("$%.0f", value)
+                return "LKR %.0f".format(value)
             }
         })
 
         pieChart.data = data
         pieChart.description.isEnabled = false
-        pieChart.centerText = "Total\n$${String.format("%.2f", expenses.sumOf { it.amount })}"
+        pieChart.centerText = "Total\nLKR ${String.format("%.2f", expenses.sumOf { it.amount })}"
         pieChart.setCenterTextSize(18f)
         pieChart.setCenterTextColor(Color.BLACK)
         pieChart.setEntryLabelColor(Color.WHITE)
         pieChart.setEntryLabelTextSize(12f)
         pieChart.holeRadius = 50f
         pieChart.transparentCircleRadius = 55f
-        pieChart.legend.isEnabled = false // Clean look, labels are on chart
+        pieChart.legend.isEnabled = false
         pieChart.animateY(1400, com.github.mikephil.charting.animation.Easing.EaseInOutQuad)
         pieChart.invalidate()
     }
 
     private fun setupBarChart(expenses: List<Expense>) {
-        // Group by Date (formatted nicely)
-        val dateMap = TreeMap<String, Float>()
-        // Use a map to store timestamp -> amount to sort correctly first
         val timestampMap = TreeMap<Long, Float>()
-        
-        // Normalize timestamps to midnight for grouping
         val cal = Calendar.getInstance()
         for (expense in expenses) {
             cal.timeInMillis = expense.date
@@ -158,20 +153,24 @@ class ReportsFragment : Fragment() {
             index++
         }
 
-        val dataSet = BarDataSet(entries, "Daily Spending")
-        dataSet.color = Color.parseColor("#2563EB") // Primary
+        val dataSet = BarDataSet(entries, "Daily Spending (LKR)")
+        dataSet.color = Color.parseColor("#2563EB")
         dataSet.valueTextColor = Color.BLACK
         dataSet.valueTextSize = 12f
         dataSet.highLightColor = Color.parseColor("#9333EA")
 
         val data = BarData(dataSet)
-        data.barWidth = 0.7f // Slimmer bars
+        data.setValueFormatter(object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return "%.0f".format(value)
+            }
+        })
+        data.barWidth = 0.7f
 
         barChart.data = data
         barChart.description.isEnabled = false
         barChart.setFitBars(true)
         
-        // X-Axis Styling
         val xAxis = barChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(labels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
@@ -179,16 +178,19 @@ class ReportsFragment : Fragment() {
         xAxis.setDrawGridLines(false)
         xAxis.textColor = Color.DKGRAY
         xAxis.textSize = 12f
-        xAxis.labelRotationAngle = -45f // Slanted labels for better fit
+        xAxis.labelRotationAngle = -45f
 
-        // Y-Axis Styling
-        barChart.axisRight.isEnabled = false // Hide right axis
+        barChart.axisRight.isEnabled = false
         barChart.axisLeft.textColor = Color.DKGRAY
         barChart.axisLeft.setDrawGridLines(true)
+        barChart.axisLeft.valueFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return "LKR %.0f".format(value)
+            }
+        }
         
-        // Zoom / Scroll
-        barChart.setVisibleXRangeMaximum(7f) // Show max 7 bars at once, scroll for more
-        barChart.moveViewToX(index) // Scroll to end (latest dates)
+        barChart.setVisibleXRangeMaximum(7f)
+        barChart.moveViewToX(index)
         
         barChart.animateY(1000)
         barChart.invalidate()

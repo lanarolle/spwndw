@@ -42,7 +42,7 @@ class ExpenseAdapter(
         fun bind(expense: Expense) {
             tvExpenseName.text = expense.name
             tvCategory.text = expense.category
-            tvAmount.text = String.format("-$%.2f", expense.amount)
+            tvAmount.text = String.format("-LKR %.2f", expense.amount)
 
             val icon = when (expense.category) {
                 "Food" -> R.drawable.ic_food
