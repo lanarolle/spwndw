@@ -114,16 +114,7 @@ class DashboardFragment : Fragment() {
         }
         
         insightsButton.setOnClickListener {
-            val transactions = expenses.joinToString("\n") { "${it.name}: LKR ${it.amount}" }
-            viewModel.getFinancialInsights(transactions)
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.financialInsights.collect { insights ->
-                if (insights != null) {
-                    Toast.makeText(context, insights, Toast.LENGTH_LONG).show()
-                }
-            }
+            findNavController().navigate(R.id.action_dashboardFragment_to_financialInsightsFragment)
         }
 
         fetchExpenses()

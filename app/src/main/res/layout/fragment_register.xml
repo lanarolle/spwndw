@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_background"
+    android:background="@drawable/login_backgroundd"
     tools:context=".RegisterFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -34,27 +34,16 @@
             android:layout_height="wrap_content"
             android:padding="32dp">
 
-            <com.google.android.material.card.MaterialCardView
+            <ImageView
                 android:id="@+id/card_logo"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                app:cardBackgroundColor="@color/colorPrimary"
-                app:cardCornerRadius="48dp"
-                app:cardElevation="8dp"
+                android:layout_width="117dp"
+                android:layout_height="121dp"
+                android:src="@drawable/full_logo_2"
                 app:layout_constraintBottom_toTopOf="@+id/tv_title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_person_add"
-                    app:tint="@color/white" />
-
-            </com.google.android.material.card.MaterialCardView>
+                app:layout_constraintVertical_chainStyle="packed" />
 
             <TextView
                 android:id="@+id/tv_title"

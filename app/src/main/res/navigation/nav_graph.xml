@@ -57,6 +57,9 @@
         <action
             android:id="@+id/action_dashboardFragment_to_reportsFragment"
             app:destination="@id/nav_reports" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_financialInsightsFragment"
+            app:destination="@id/financialInsightsFragment" />
     </fragment>
 
     <fragment
@@ -92,6 +95,12 @@
         android:name="com.example.spwndw.ReportsFragment"
         android:label="fragment_reports"
         tools:layout="@layout/fragment_reports" />
+
+    <fragment
+        android:id="@+id/financialInsightsFragment"
+        android:name="com.example.spwndw.FinancialInsightsFragment"
+        android:label="fragment_financial_insights"
+        tools:layout="@layout/fragment_financial_insights" />
 
     <action
         android:id="@+id/action_global_loginFragment"
